@@ -1,8 +1,4 @@
-import sys
-
-sys.path.append("/home/ksheriff/PACKAGES/WarrenCowleyParameters/src")
 from ovito.io import import_file
-
 import WarrenCowleyParameters as wc
 
 pipeline = import_file("fcc.dump")
