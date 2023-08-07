@@ -27,13 +27,18 @@ class WarrenCowleyParameters(ModifierInterface):
         self, neigh_in_shell_types, central_atom_type_mask, c, unique_types
     ):
         ntypes = len(c)
+        neight_in_shell = neigh_in_shell_types.shape[1]
+
         wc = np.zeros((ntypes, ntypes))
 
         for i in range(ntypes):
-            neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]].flatten()
-            counts = np.bincount(neight_type_aroud_itype)
-            pij = counts[unique_types] / len(neight_type_aroud_itype)
+            neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]]
+            neight_type_aroud_itype_flat = neight_type_aroud_itype.flatten()
+            counts = np.bincount(neight_type_aroud_itype_flat)
+            pij = counts[unique_types] / (neight_type_aroud_itype.shape[0] * neight_in_shell)
+
             wc[i, :] = 1 - pij / c
+           
 
         # for i in range(ntypes):
         #     neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]].flatten()
