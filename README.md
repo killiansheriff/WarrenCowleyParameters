@@ -3,7 +3,7 @@ OVITO Python modifier to compute the Warren-Cowley parameters defined as:
 
 $$\alpha_{ij}^m = 1-\frac{p_{ij}^m}{c_j},$$ 
 
-where $m$ denotes the $m$-th nearest-neighbor shell, $p_{ij}^m$ is the average probability of finding a j-type atom around an $i$-type atom in the $m$-th shell, and $c_j$ is the average concentration of $j$-type atom in the system. 
+where $m$ denotes the $m$-th nearest-neighbor shell, $p_{ij}^m$ is the average probability of finding a $j$-type atom around an $i$-type atom in the $m$-th shell, and $c_j$ is the average concentration of $j$-type atom in the system. 
 A negative $\alpha_{ij}^m$ suggests the tendency of $j$-type clustering in the $m$-th shell of an $i$-type atom, while a positive value means repulsion.
 
 ## Utilisation 
