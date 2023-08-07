@@ -67,4 +67,4 @@ class WarrenCowleyParameters(ModifierInterface):
                 neigh_in_shell_types, central_atom_type_mask, c, unique_types
             )
             wc_for_shells[m] = wc
-        data.attributes["Wa
+        data.attributes["Warren-Cowley parameters"] = wc_for_shells
