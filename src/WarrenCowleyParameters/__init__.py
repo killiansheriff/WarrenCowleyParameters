@@ -1,11 +1,5 @@
 import numpy as np
-from ovito.data import (
-    DataCollection,
-    DataTable,
-    ElementType,
-    NearestNeighborFinder,
-    ParticleType,
-)
+from ovito.data import DataCollection, NearestNeighborFinder
 from ovito.pipeline import ModifierInterface
 from traits.api import ListInt
 
@@ -35,9 +29,7 @@ class WarrenCowleyParameters(ModifierInterface):
             neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]]
             neight_type_aroud_itype_flat = neight_type_aroud_itype.flatten()
             counts = np.bincount(neight_type_aroud_itype_flat)
-            pij = counts[unique_types] / (
-                neight_type_aroud_itype.shape[0] * neight_in_shell
-            )
+            pij = counts[unique_types] / (neight_type_aroud_itype.shape[0] * neight_in_shell)
 
             wc[i, :] = 1 - pij / c
 
@@ -52,9 +44,7 @@ class WarrenCowleyParameters(ModifierInterface):
         neigh_idx, _ = finder.find_all()
 
         unique_types, c = self.get_concentration(particles_types)
-        central_atom_type_mask = self.get_central_atom_type_mask(
-            unique_types, particles_types
-        )
+        central_atom_type_mask = self.get_central_atom_type_mask(unique_types, particles_types)
 
         nshells = len(self.nneigh) - 1
         wc_for_shells = np.zeros((nshells, ntypes, ntypes))
