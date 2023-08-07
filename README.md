@@ -26,15 +26,15 @@ print(f"2NN Warren-Cowley parameters: {wc_for_shells[1]}")
 Examples scripts can be found in the ``examples/`` folder.
 
 ## Installation
-For *OVITO PRO* built-in Python interpreter, please use:
-```bash
-ovitos -m pip install --user git+https://github.com/killiansheriff/WarrenCowleyParameters.git
-``` 
-
 For a standalone Python package or Conda environment, please use:
 ```bash
 pip install --user git+https://github.com/killiansheriff/WarrenCowleyParameters.git
 ```
+
+For *OVITO PRO* built-in Python interpreter, please use:
+```bash
+ovitos -m pip install --user git+https://github.com/killiansheriff/WarrenCowleyParameters.git
+``` 
 
 ## Contact
 If any questions, feel free to contact me (ksheriff at mit dot edu).
