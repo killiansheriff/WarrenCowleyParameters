@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "WarrenCowleyParameters"
+version = "2023.0"
+description = "OVITO Python modifier to compute Warren-Cowley parameters."
+keywords = ["ovito", "python-modifier"]
+authors = [{name = "Killian Sheriff", email = "ksheriff@mit.edu"}]
+maintainers = [{name = "Killian Sheriff", email = "ksheriff@mit.edu"}]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "ovito >= 3.9.0.dev35",
+    "numpy >= 1.22",
+]
+
+[project.urls]
+repository = "https://github.com/killiansheriff/WarrenCowleyParameters"
+
+[project.entry-points.'OVITO.Modifier']
+"Generate Random Solution" = "WarrenCowleyParameters:WarrenCowleyParameters"
