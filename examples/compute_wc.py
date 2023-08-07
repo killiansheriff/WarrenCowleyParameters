@@ -3,9 +3,13 @@ import sys
 sys.path.append("/home/ksheriff/PACKAGES/WarrenCowleyParameters/src")
 from ovito.io import import_file
 
-from WarrenCowleyParameters import WarrenCowleyParameters
+import WarrenCowleyParameters as wc
 
 pipeline = import_file("fcc.dump")
-mod = WarrenCowleyParameters(nneigh=[0, 12, 18])
+mod = wc.WarrenCowleyParameters(nneigh=[0, 12, 18])
 pipeline.modifiers.append(mod)
-pipeline.compute()
+data = pipeline.compute()
+
+wc_for_shells = data.attributes["Warren-Cowley parameters"]
+print(f"1NN Warren-Cowley parameters: {wc_for_shells[0]}")
+print(f"2NN Warren-Cowley parameters: {wc_for_shells[1]}")
