@@ -11,17 +11,16 @@ Here is an example of how to compute the 1st and 2nd nearest neighbor shell Warr
 
 ```python
 from ovito.io import import_file
-from WarrenCowleyParameters import WarrenCowleyParameters
+import WarrenCowleyParameters as wc
 
 pipeline = import_file("fcc.dump")
-mod = WarrenCowleyParameters(nneigh=[0, 12, 18])
+mod = wc.WarrenCowleyParameters(nneigh=[0, 12, 18])
 pipeline.modifiers.append(mod)
 data = pipeline.compute()
 
 wc_for_shells = data.attributes["Warren-Cowley parameters"]
-
-print(f'1NN Warren-Cowley parameters: {wc_for_shells[0]}')
-print(f'2NN Warren-Cowley parameters: {wc_for_shells[1]}')
+print(f"1NN Warren-Cowley parameters: {wc_for_shells[0]}")
+print(f"2NN Warren-Cowley parameters: {wc_for_shells[1]}")
 ```
 Examples scripts can be found in the ``examples/`` folder.
 
