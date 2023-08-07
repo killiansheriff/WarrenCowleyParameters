@@ -35,20 +35,11 @@ class WarrenCowleyParameters(ModifierInterface):
             neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]]
             neight_type_aroud_itype_flat = neight_type_aroud_itype.flatten()
             counts = np.bincount(neight_type_aroud_itype_flat)
-            pij = counts[unique_types] / (neight_type_aroud_itype.shape[0] * neight_in_shell)
+            pij = counts[unique_types] / (
+                neight_type_aroud_itype.shape[0] * neight_in_shell
+            )
 
             wc[i, :] = 1 - pij / c
-           
-
-        # for i in range(ntypes):
-        #     neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]].flatten()
-        #     for j in range(ntypes):
-        #         # pij is the average probability of finding a j-type atom around an i-type atom in the mth shell
-        #         pij = len(
-        #             neight_type_aroud_itype[neight_type_aroud_itype == unique_types[j]]
-        #         ) / len(neight_type_aroud_itype)
-
-        #         wc[i, j] = 1 - pij / c[j]
 
         return wc
 
@@ -61,7 +52,9 @@ class WarrenCowleyParameters(ModifierInterface):
         neigh_idx, _ = finder.find_all()
 
         unique_types, c = self.get_concentration(particles_types)
-        central_atom_type_mask = self.get_central_atom_type_mask(unique_types, particles_types)
+        central_atom_type_mask = self.get_central_atom_type_mask(
+            unique_types, particles_types
+        )
 
         nshells = len(self.nneigh) - 1
         wc_for_shells = np.zeros((nshells, ntypes, ntypes))
@@ -74,4 +67,4 @@ class WarrenCowleyParameters(ModifierInterface):
                 neigh_in_shell_types, central_atom_type_mask, c, unique_types
             )
             wc_for_shells[m] = wc
-        data.attributes["Warren-Cowley parameters"] = wc_for_shells
+        data.attributes["Wa
