@@ -20,8 +20,8 @@ pipeline.modifiers.append(mod)
 data = pipeline.compute()
 
 wc_for_shells = data.attributes["Warren-Cowley parameters"]
-print(f"1NN Warren-Cowley parameters: {wc_for_shells[0]}")
-print(f"2NN Warren-Cowley parameters: {wc_for_shells[1]}")
+print(f"1NN Warren-Cowley parameters: \n {wc_for_shells[0]}")
+print(f"2NN Warren-Cowley parameters: \n {wc_for_shells[1]}")
 ```
 Examples scripts can be found in the ``examples/`` folder.
 
