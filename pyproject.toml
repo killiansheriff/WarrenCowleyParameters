@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
@@ -7,6 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "WarrenCowleyParameters"
 # version = "2023.1"
+dynamic = ["version"]
 description = "OVITO Python modifier to compute Warren-Cowley parameters."
 keywords = ["ovito", "python-modifier"]
 authors = [{name = "Killian Sheriff", email = "ksheriff@mit.edu"}]
