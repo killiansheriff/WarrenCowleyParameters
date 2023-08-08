@@ -1,5 +1,5 @@
 # WarrenCowleyParameters
-OVITO Python modifier to compute the Warren-Cowley parameters defined as:
+OVITO Python modifier to compute the Warren-Cowley parameters, defined as:
 
 $$\alpha_{ij}^m = 1-\frac{p_{ij}^m}{c_j},$$ 
 
