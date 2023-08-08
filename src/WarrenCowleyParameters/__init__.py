@@ -1,7 +1,7 @@
 import itertools
+
 import numpy as np
-from ovito.data import (DataCollection, DataTable, ElementType,
-                        NearestNeighborFinder)
+from ovito.data import DataCollection, DataTable, ElementType, NearestNeighborFinder
 from ovito.pipeline import ModifierInterface
 from traits.api import Int, List
 
@@ -11,8 +11,7 @@ class WarrenCowleyParameters(ModifierInterface):
 
     def validateInput(self):
         if not np.all(np.diff(self.nneigh) > 0):
-            raise ValueError(
-                "'Max atoms in shells' must be strictly increasing.")
+            raise ValueError("'Max atoms in shells' must be strictly increasing.")
 
     @staticmethod
     def get_type_name(data, id):
@@ -22,18 +21,21 @@ class WarrenCowleyParameters(ModifierInterface):
             return name
         return f"Type {id}"
 
-    def get_concentration(self, particle_types):
+    @staticmethod
+    def get_concentration(particle_types):
         unique_types, counts = np.unique(particle_types, return_counts=True)
         return unique_types, counts / len(particle_types)
 
-    def get_central_atom_type_mask(self, unique_types, particles_types):
+    @staticmethod
+    def get_central_atom_type_mask(unique_types, particles_types):
         central_atom_type_mask = []
         for atom_type in unique_types:
             central_atom_type_mask.append(np.where(particles_types == atom_type))
         return central_atom_type_mask
 
+    @staticmethod
     def get_wc_from_neigh_in_shell_types(
-        self, neigh_in_shell_types, central_atom_type_mask, c, unique_types
+        neigh_in_shell_types, central_atom_type_mask, c, unique_types
     ):
         ntypes = len(c)
         neight_in_shell = neigh_in_shell_types.shape[1]
@@ -82,8 +84,7 @@ class WarrenCowleyParameters(ModifierInterface):
             labels.append([])
             warrenCowley.append([])
             for i, j in itertools.combinations_with_replacement(idx, 2):
-                assert np.isclose(
-                    wc_for_shells[m, i, j], wc_for_shells[m, j, i])
+                assert np.isclose(wc_for_shells[m, i, j], wc_for_shells[m, j, i])
                 namei = self.get_type_name(data, unique_types[i])
                 namej = self.get_type_name(data, unique_types[j])
                 labels[-1].append(f"{namei}-{namej}")
@@ -91,11 +92,11 @@ class WarrenCowleyParameters(ModifierInterface):
 
         for m in range(nshells):
             table = DataTable(
-                title=f"Warren-Cowley parameter: shell={m+1}", plot_mode=DataTable.PlotMode.BarChart)
-            table.x = table.create_property(
-                "i-j pair", data=range(len(labels[m])))
-            table.x.types = [ElementType(id=idx, name=l)
-                             for idx, l in enumerate(labels[m])]
+                title=f"Warren-Cowley parameter: shell={m+1}", plot_mode=DataTable.PlotMode.BarChart
+            )
+            table.x = table.create_property("i-j pair", data=range(len(labels[m])))
+            table.x.types = [ElementType(id=idx, name=l) for idx, l in enumerate(labels[m])]
             table.y = table.create_property(
-                f"Warren-Cowley parameter: shell={m+1}", data=warrenCowley[m])
+                f"Warren-Cowley parameter: shell={m+1}", data=warrenCowley[m]
+            )
             data.objects.append(table)
