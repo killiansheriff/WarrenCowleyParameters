@@ -7,6 +7,10 @@ from traits.api import List, Int
 class WarrenCowleyParameters(ModifierInterface):
     nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
 
+    def validateInput(self):
+        if not np.all( np.diff(self.nneigh) > 0):
+            raise ValueError("'Max atoms in shells' must be strictly increasing.")
+
     def get_concentration(self, particle_types):
         unique_types, counts = np.unique(particle_types, return_counts=True)
         return unique_types, counts / len(particle_types)
@@ -34,10 +38,6 @@ class WarrenCowleyParameters(ModifierInterface):
             wc[i, :] = 1 - pij / c
 
         return wc
-
-    def validateInput(self):
-        if not np.all( np.diff(self.nneigh) > 0):
-            raise ValueError("'Max atoms in shells' must be strictly increasing.")
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
         particles_types = np.array(data.particles.particle_type)
