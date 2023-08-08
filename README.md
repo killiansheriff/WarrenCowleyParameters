@@ -37,7 +37,6 @@ ovitos -m pip install --user git+https://github.com/killiansheriff/WarrenCowleyP
 ``` 
 
 ![](media/wc_bar_plot.png)
-![](media/wc_table.png)
 
 ## Contact
 If any questions, feel free to contact me (ksheriff at mit dot edu).
