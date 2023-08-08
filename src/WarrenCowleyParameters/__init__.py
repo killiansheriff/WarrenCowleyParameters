@@ -40,6 +40,7 @@ class WarrenCowleyParameters(ModifierInterface):
         return wc
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
+        self.validateInput()
         particles_types = np.array(data.particles.particle_type)
         ntypes = len(np.unique(particles_types))
 
