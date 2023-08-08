@@ -1,15 +1,26 @@
+import itertools
 import numpy as np
-from ovito.data import DataCollection, NearestNeighborFinder
+from ovito.data import (DataCollection, DataTable, ElementType,
+                        NearestNeighborFinder)
 from ovito.pipeline import ModifierInterface
-from traits.api import List, Int
+from traits.api import Int, List
 
 
 class WarrenCowleyParameters(ModifierInterface):
     nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
 
     def validateInput(self):
-        if not np.all( np.diff(self.nneigh) > 0):
-            raise ValueError("'Max atoms in shells' must be strictly increasing.")
+        if not np.all(np.diff(self.nneigh) > 0):
+            raise ValueError(
+                "'Max atoms in shells' must be strictly increasing.")
+
+    @staticmethod
+    def get_type_name(data, id):
+        ptype = data.particles["Particle Type"].type_by_id(id)
+        name = ptype.name
+        if name:
+            return name
+        return f"Type {id}"
 
     def get_concentration(self, particle_types):
         unique_types, counts = np.unique(particle_types, return_counts=True)
@@ -63,3 +74,28 @@ class WarrenCowleyParameters(ModifierInterface):
             )
             wc_for_shells[m] = wc
         data.attributes["Warren-Cowley parameters"] = wc_for_shells
+
+        labels = []
+        warrenCowley = []
+        idx = list(range(len(unique_types)))
+        for m in range(nshells):
+            labels.append([])
+            warrenCowley.append([])
+            for i, j in itertools.combinations_with_replacement(idx, 2):
+                assert np.isclose(
+                    wc_for_shells[m, i, j], wc_for_shells[m, j, i])
+                namei = self.get_type_name(data, unique_types[i])
+                namej = self.get_type_name(data, unique_types[j])
+                labels[-1].append(f"{namei}-{namej}")
+                warrenCowley[-1].append(wc_for_shells[m, i, j])
+
+        for m in range(nshells):
+            table = DataTable(
+                title=f"Warren-Cowley parameter: shell={m+1}", plot_mode=DataTable.PlotMode.BarChart)
+            table.x = table.create_property(
+                "i-j pair", data=range(len(labels[m])))
+            table.x.types = [ElementType(id=idx, name=l)
+                             for idx, l in enumerate(labels[m])]
+            table.y = table.create_property(
+                f"Warren-Cowley parameter: shell={m+1}", data=warrenCowley[m])
+            data.objects.append(table)
