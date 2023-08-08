@@ -28,13 +28,15 @@ Example scripts can be found in the ``examples/`` folder.
 ## Installation
 For a standalone Python package or Conda environment, please use:
 ```bash
-pip install --user git+https://github.com/killiansheriff/WarrenCowleyParameters.git
+pip install --user WarrenCowleyParameters
 ```
 
 For *OVITO PRO* built-in Python interpreter, please use:
 ```bash
-ovitos -m pip install --user git+https://github.com/killiansheriff/WarrenCowleyParameters.git
-``` 
+ovitos -m pip install --user WarrenCowleyParameters
+```
+
+If you want to install the lastest git commit, please replace ``WarrenCowleyParameters`` by ``git+https://github.com/killiansheriff/WarrenCowleyParameters.git``.
 
 ![](media/wc_bar_plot.png)
 
