@@ -1,10 +1,13 @@
+#https://www.seanh.cc/2022/05/21/publishing-python-packages-from-github-actions/#pyprojecttoml-and-setuptools_scm
+
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "WarrenCowleyParameters"
-version = "0.0.2"
+#version = "0.0.2"
+dynamic = ["version"]
 description = "OVITO Python modifier to compute Warren-Cowley parameters."
 keywords = ["ovito", "python-modifier"]
 authors = [{name = "Killian Sheriff", email = "ksheriff@mit.edu"}]
