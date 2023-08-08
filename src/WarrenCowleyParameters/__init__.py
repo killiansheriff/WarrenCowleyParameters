@@ -5,7 +5,7 @@ from traits.api import ListInt
 
 
 class WarrenCowleyParameters(ModifierInterface):
-    nneigh = ListInt([0, 12], label="Max atoms in shells", minlen=1)
+    nneigh = ListInt([0, 12], label="Max atoms in shells", minlen=2)
 
     def get_concentration(self, particle_types):
         unique_types, counts = np.unique(particle_types, return_counts=True)
