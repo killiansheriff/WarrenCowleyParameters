@@ -36,5 +36,8 @@ For *OVITO PRO* built-in Python interpreter, please use:
 ovitos -m pip install --user git+https://github.com/killiansheriff/WarrenCowleyParameters.git
 ``` 
 
+![](media/wc_bar_plot.png)
+![](media/wc_table.png)
+
 ## Contact
 If any questions, feel free to contact me (ksheriff at mit dot edu).
