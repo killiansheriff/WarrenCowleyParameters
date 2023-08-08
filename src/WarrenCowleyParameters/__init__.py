@@ -57,33 +57,7 @@ class WarrenCowleyParameters(ModifierInterface):
 
         return wc
 
-    def modify(self, data: DataCollection, frame: int, **kwargs):
-        self.validateInput()
-        particles_types = np.array(data.particles.particle_type)
-        ntypes = len(np.unique(particles_types))
-        max_number_of_neigh = np.max(self.nneigh)
-
-        # Find nearest neighbors for each particle
-        finder = NearestNeighborFinder(max_number_of_neigh, data)
-        neigh_idx, _ = finder.find_all()
-
-        unique_types, c = self.get_concentration(particles_types)
-        central_atom_type_mask = self.get_central_atom_type_mask(unique_types, particles_types)
-
-        nshells = len(self.nneigh) - 1
-        wc_for_shells = np.zeros((nshells, ntypes, ntypes))
-
-        # Calculate Warren-Cowley parameters for each shell
-        for m in range(nshells):
-            neigh_idx_in_shell = neigh_idx[:, self.nneigh[m] : self.nneigh[m + 1]]
-            neigh_in_shell_types = particles_types[neigh_idx_in_shell]
-
-            wc = self.get_wc_from_neigh_in_shell_types(
-                neigh_in_shell_types, central_atom_type_mask, c, unique_types
-            )
-            wc_for_shells[m] = wc
-        data.attributes["Warren-Cowley parameters"] = wc_for_shells
-
+    def create_visualization_tables(self, unique_types, nshells, wc_for_shells, data):
         labels = []
         warrenCowley = []
         idx = list(range(len(unique_types)))
@@ -110,3 +84,32 @@ class WarrenCowleyParameters(ModifierInterface):
                 f"Warren-Cowley parameter: shell={m+1}", data=warrenCowley[m]
             )
             data.objects.append(table)
+
+    def modify(self, data: DataCollection, frame: int, **kwargs):
+        self.validateInput()
+        particles_types = np.array(data.particles.particle_type)
+        ntypes = len(np.unique(particles_types))
+        max_number_of_neigh = np.max(self.nneigh)
+
+        # Find nearest neighbors for each particle
+        finder = NearestNeighborFinder(max_number_of_neigh, data)
+        neigh_idx, _ = finder.find_all()
+
+        unique_types, c = self.get_concentration(particles_types)
+        central_atom_type_mask = self.get_central_atom_type_mask(unique_types, particles_types)
+
+        nshells = len(self.nneigh) - 1
+        wc_for_shells = np.zeros((nshells, ntypes, ntypes))
+
+        # Calculate Warren-Cowley parameters for each shell
+        for m in range(nshells):
+            neigh_idx_in_shell = neigh_idx[:, self.nneigh[m] : self.nneigh[m + 1]]
+            neigh_in_shell_types = particles_types[neigh_idx_in_shell]
+
+            wc = self.get_wc_from_neigh_in_shell_types(
+                neigh_in_shell_types, central_atom_type_mask, c, unique_types
+            )
+            wc_for_shells[m] = wc
+        
+        data.attributes["Warren-Cowley parameters"] = wc_for_shells
+        self.create_visualization_tables(unique_types, nshells, wc_for_shells, data)
