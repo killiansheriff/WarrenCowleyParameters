@@ -13,7 +13,7 @@ license = {text = "MIT License"}
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    "ovito >= 3.9.0.dev35",
+    "ovito >= 3.9.1",
     "numpy >= 1.22",
 ]
 
@@ -21,4 +21,4 @@ dependencies = [
 repository = "https://github.com/killiansheriff/WarrenCowleyParameters"
 
 [project.entry-points.'OVITO.Modifier']
-"Generate Random Solution" = "WarrenCowleyParameters:WarrenCowleyParameters"
+"Warren Cowley Parameters" = "WarrenCowleyParameters:WarrenCowleyParameters"
