@@ -1,4 +1,8 @@
 # WarrenCowleyParameters
+
+![PyPI Version](https://img.shields.io/pypi/v/WarrenCowleyParameters.svg) ![PyPI Downloads](https://img.shields.io/pypi/dm/WarrenCowleyParameters.svg?label=PyPI%20downloads)
+
+
 OVITO Python modifier to compute the Warren-Cowley parameters, defined as:
 
 $$\alpha_{ij}^m = 1-\frac{p_{ij}^m}{c_j},$$ 
@@ -43,5 +47,5 @@ If you want to install the lastest git commit, please replace ``WarrenCowleyPara
 ## Contact
 If any questions, feel free to contact me (ksheriff at mit dot edu).
 
-## References & citing 
+## References & Citing 
 If you use this repository in your work, please cite ``bibtex entry to follow``.
