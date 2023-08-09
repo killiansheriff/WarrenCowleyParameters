@@ -42,3 +42,6 @@ If you want to install the lastest git commit, please replace ``WarrenCowleyPara
 
 ## Contact
 If any questions, feel free to contact me (ksheriff at mit dot edu).
+
+## References & citing 
+If you use this repository in your work, please cite ``ibtex entry to follow``.
