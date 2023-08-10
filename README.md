@@ -29,6 +29,8 @@ print(f"2NN Warren-Cowley parameters: \n {wc_for_shells[1]}")
 ```
 Example scripts can be found in the ``examples/`` folder.
 
+![](media/wc_bar_plot.png)
+
 ## Installation
 For a standalone Python package or Conda environment, please use:
 ```bash
@@ -41,8 +43,6 @@ ovitos -m pip install --user WarrenCowleyParameters
 ```
 
 If you want to install the lastest git commit, please replace ``WarrenCowleyParameters`` by ``git+https://github.com/killiansheriff/WarrenCowleyParameters.git``.
-
-![](media/wc_bar_plot.png)
 
 ## Contact
 If any questions, feel free to contact me (ksheriff at mit dot edu).
