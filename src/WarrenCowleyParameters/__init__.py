@@ -50,9 +50,11 @@ class WarrenCowleyParameters(ModifierInterface):
         for i in range(ntypes):
             neight_type_aroud_itype = neigh_in_shell_types[central_atom_type_mask[i]]
             neight_type_aroud_itype_flat = neight_type_aroud_itype.flatten()
-            counts = np.bincount(neight_type_aroud_itype_flat)
-            pij = counts[unique_types] / (neight_type_aroud_itype.shape[0] * neight_in_shell)
 
+            counts = np.bincount(neight_type_aroud_itype_flat, minlength=ntypes + 1)
+
+            pij = counts[unique_types] / (neight_type_aroud_itype.shape[0] * neight_in_shell)
+            
             wc[i, :] = 1 - pij / c
 
         return wc
@@ -110,6 +112,6 @@ class WarrenCowleyParameters(ModifierInterface):
                 neigh_in_shell_types, central_atom_type_mask, c, unique_types
             )
             wc_for_shells[m] = wc
-        
+
         data.attributes["Warren-Cowley parameters"] = wc_for_shells
         self.create_visualization_tables(unique_types, nshells, wc_for_shells, data)
