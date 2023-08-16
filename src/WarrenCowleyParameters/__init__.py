@@ -7,6 +7,7 @@ from traits.api import Int, List
 
 
 class WarrenCowleyParameters(ModifierInterface):
+
     # List of integers representing the maximum number of atoms in shells
     nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
 
