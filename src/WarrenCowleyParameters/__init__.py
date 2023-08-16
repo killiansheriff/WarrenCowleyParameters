@@ -10,17 +10,16 @@ class WarrenCowleyParameters(ModifierInterface):
     # List of integers representing the maximum number of atoms in shells
     nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
 
-    # Not implemented yet, but should be modified to work on only selected particles
-    # only_selected = Bool(False, label="Only selected")
+    # Wheather or not to apply it on only selected particles
+    only_selected = Bool(False, label="Only selected")
 
     def validateInput(self, data):
         # Check if the list of maximum atoms in shells is strictly increasing
         if not np.all(np.diff(self.nneigh) > 0):
             raise ValueError("'Max atoms in shells' must be strictly increasing.")
 
-        # Not implemented yet
-        # if (self.only_selected) and "Selection" not in data.particles.keys():
-        #     raise KeyError("No selection defined")
+        if (self.only_selected) and "Selection" not in data.particles.keys():
+            raise KeyError("No selection defined")
 
     @staticmethod
     def get_type_name(data, id):
@@ -31,8 +30,20 @@ class WarrenCowleyParameters(ModifierInterface):
             return name
         return f"Type {id}"
 
-    @staticmethod
-    def get_concentration(particle_types):
+    def get_concentration(self, all_particles_types, selected_indices, selected_neigh_idx):
+        # If we are using only selected particle, get concentration from selected atoms + their neighbors
+        if self.only_selected:
+            unique_neighs = np.unique(selected_neigh_idx)
+            combined_mask = np.isin(
+                np.arange(len(all_particles_types)),
+                np.concatenate([selected_indices, unique_neighs]),
+            )
+            
+            particle_types = all_particles_types[combined_mask]
+        else:
+            # if no selection, we use all particles
+            particle_types = all_particles_types
+
         # Calculate the concentration of unique particle types
         unique_types, counts = np.unique(particle_types, return_counts=True)
         return unique_types, counts / len(particle_types)
@@ -112,22 +123,35 @@ class WarrenCowleyParameters(ModifierInterface):
     def modify(self, data: DataCollection, frame: int, **kwargs):
         self.validateInput(data)
 
-        particles_types = self.get_particle_types(data)
-        ntypes = len(np.unique(particles_types))
+        all_particles_types = self.get_particle_types(data)
+        ntypes = len(np.unique(all_particles_types))
+        nparticles = data.particles.count
+
+        selected_indices = (
+            np.where(data.particles["Selection"] == 1)[0]
+            if self.only_selected
+            else range(nparticles)
+        )
+        selected_particle_types = all_particles_types[selected_indices]
 
         max_number_of_neigh = np.max(self.nneigh)
         neigh_idx = self.get_nearest_neighbors(data, max_number_of_neigh)
+        selected_neigh_idx = neigh_idx[selected_indices]
 
-        unique_types, c = self.get_concentration(particles_types)
-        central_atom_type_mask = self.get_central_atom_type_mask(unique_types, particles_types)
+        unique_types, c = self.get_concentration(
+            all_particles_types, selected_indices, selected_neigh_idx
+        )
+        central_atom_type_mask = self.get_central_atom_type_mask(
+            unique_types, selected_particle_types
+        )
 
         nshells = len(self.nneigh) - 1
         wc_for_shells = np.zeros((nshells, ntypes, ntypes))
 
         # Calculate Warren-Cowley parameters for each shell
         for m in range(nshells):
-            neigh_idx_in_shell = neigh_idx[:, self.nneigh[m] : self.nneigh[m + 1]]
-            neigh_in_shell_types = particles_types[neigh_idx_in_shell]
+            neigh_idx_in_shell = selected_neigh_idx[:, self.nneigh[m] : self.nneigh[m + 1]]
+            neigh_in_shell_types = all_particles_types[neigh_idx_in_shell]
 
             wc = self.get_wc_from_neigh_in_shell_types(
                 neigh_in_shell_types, central_atom_type_mask, c, unique_types
