@@ -7,7 +7,6 @@ from traits.api import Int, List
 
 
 class WarrenCowleyParameters(ModifierInterface):
-
     # List of integers representing the maximum number of atoms in shells
     nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
 
@@ -55,7 +54,7 @@ class WarrenCowleyParameters(ModifierInterface):
             counts = np.bincount(neight_type_aroud_itype_flat, minlength=ntypes + 1)
 
             pij = counts[unique_types] / (neight_type_aroud_itype.shape[0] * neight_in_shell)
-            
+
             wc[i, :] = 1 - pij / c
 
         return wc
@@ -79,12 +78,13 @@ class WarrenCowleyParameters(ModifierInterface):
         # Create DataTable objects for visualization
         for m in range(nshells):
             table = DataTable(
-                title=f"Warren-Cowley parameter: shell={m+1}", plot_mode=DataTable.PlotMode.BarChart
+                title=f"Warren-Cowley parameter (shell={m+1})",
+                plot_mode=DataTable.PlotMode.BarChart,
             )
             table.x = table.create_property("i-j pair", data=range(len(labels[m])))
             table.x.types = [ElementType(id=idx, name=l) for idx, l in enumerate(labels[m])]
             table.y = table.create_property(
-                f"Warren-Cowley parameter: shell={m+1}", data=warrenCowley[m]
+                f"Warren-Cowley parameter (shell={m+1})", data=warrenCowley[m]
             )
             data.objects.append(table)
 
