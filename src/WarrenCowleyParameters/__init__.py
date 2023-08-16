@@ -3,17 +3,24 @@ import itertools
 import numpy as np
 from ovito.data import DataCollection, DataTable, ElementType, NearestNeighborFinder
 from ovito.pipeline import ModifierInterface
-from traits.api import Int, List
+from traits.api import Bool, Int, List
 
 
 class WarrenCowleyParameters(ModifierInterface):
     # List of integers representing the maximum number of atoms in shells
     nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
 
-    def validateInput(self):
+    # Not implemented yet, but should be modified to work on only selected particles
+    # only_selected = Bool(False, label="Only selected")
+
+    def validateInput(self, data):
         # Check if the list of maximum atoms in shells is strictly increasing
         if not np.all(np.diff(self.nneigh) > 0):
             raise ValueError("'Max atoms in shells' must be strictly increasing.")
+
+        # Not implemented yet
+        # if (self.only_selected) and "Selection" not in data.particles.keys():
+        #     raise KeyError("No selection defined")
 
     @staticmethod
     def get_type_name(data, id):
@@ -59,6 +66,20 @@ class WarrenCowleyParameters(ModifierInterface):
 
         return wc
 
+    @staticmethod
+    def get_particle_types(data):
+        particle_types = np.array(data.particles.particle_type)
+
+        return particle_types
+
+    @staticmethod
+    def get_nearest_neighbors(data, max_number_of_neigh):
+        # Find nearest neighbors for each particle
+        finder = NearestNeighborFinder(max_number_of_neigh, data)
+        neigh_idx, _ = finder.find_all()
+
+        return neigh_idx
+
     def create_visualization_tables(self, unique_types, nshells, wc_for_shells, data):
         labels = []
         warrenCowley = []
@@ -89,14 +110,13 @@ class WarrenCowleyParameters(ModifierInterface):
             data.objects.append(table)
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
-        self.validateInput()
-        particles_types = np.array(data.particles.particle_type)
-        ntypes = len(np.unique(particles_types))
-        max_number_of_neigh = np.max(self.nneigh)
+        self.validateInput(data)
 
-        # Find nearest neighbors for each particle
-        finder = NearestNeighborFinder(max_number_of_neigh, data)
-        neigh_idx, _ = finder.find_all()
+        particles_types = self.get_particle_types(data)
+        ntypes = len(np.unique(particles_types))
+
+        max_number_of_neigh = np.max(self.nneigh)
+        neigh_idx = self.get_nearest_neighbors(data, max_number_of_neigh)
 
         unique_types, c = self.get_concentration(particles_types)
         central_atom_type_mask = self.get_central_atom_type_mask(unique_types, particles_types)
