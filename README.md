@@ -1,7 +1,7 @@
 # WarrenCowleyParameters
 
 ![PyPI Version](https://img.shields.io/pypi/v/WarrenCowleyParameters.svg) ![PyPI Downloads](https://static.pepy.tech/badge/WarrenCowleyParameters)
-
+![tests](https://github.com/killiansheriff/WarrenCowleyParameters/actions/workflows/python-tests.yml/badge.svg)
 
 OVITO Python modifier to compute the Warren-Cowley parameters, defined as:
 
