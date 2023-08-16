@@ -58,13 +58,19 @@ def test_selection(import_data: DataCollection):
     data.apply(ExpressionSelectionModifier(expression="Position.X > 10"))
     data.apply(WarrenCowleyParameters(only_selected=True))
 
-    # wc_for_shells = data.attributes["Warren-Cowley parameters"]
-    # wc = wc_for_shells[0]
+    wc_for_shells = data.attributes["Warren-Cowley parameters"]
 
-    # expected_wc = np.array([])
+    wc = wc_for_shells[0]
 
-    # assert np.allclose(expected_wc, wc)
-    pass
+    expected_wc = np.array(
+        [
+            [0.33569795, -0.23686668, -0.10618079],
+            [-0.23876543, 0.05823831, 0.1824792],
+            [-0.09821579, 0.19178503, -0.08777969],
+        ]
+    )
+
+    assert np.allclose(expected_wc, wc)
 
 
 def test_wc_shape(import_data: DataCollection):

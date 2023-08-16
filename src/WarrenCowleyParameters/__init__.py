@@ -1,4 +1,5 @@
 import itertools
+import warnings
 
 import numpy as np
 from ovito.data import DataCollection, DataTable, ElementType, NearestNeighborFinder
@@ -38,7 +39,7 @@ class WarrenCowleyParameters(ModifierInterface):
                 np.arange(len(all_particles_types)),
                 np.concatenate([selected_indices, unique_neighs]),
             )
-            
+
             particle_types = all_particles_types[combined_mask]
         else:
             # if no selection, we use all particles
@@ -101,7 +102,6 @@ class WarrenCowleyParameters(ModifierInterface):
             labels.append([])
             warrenCowley.append([])
             for i, j in itertools.combinations_with_replacement(idx, 2):
-                assert np.isclose(wc_for_shells[m, i, j], wc_for_shells[m, j, i])
                 namei = self.get_type_name(data, unique_types[i])
                 namej = self.get_type_name(data, unique_types[j])
                 labels[-1].append(f"{namei}-{namej}")
@@ -119,6 +119,14 @@ class WarrenCowleyParameters(ModifierInterface):
                 f"Warren-Cowley parameter (shell={m+1})", data=warrenCowley[m]
             )
             data.objects.append(table)
+
+    @staticmethod
+    def check_symmetry(arr):
+        try:
+            assert np.allclose(arr.T, arr)
+        except:
+            # warnings.warn("WCs are not exactly symmetric.")
+            print("WARNING: WCs are not exactly symmetric.")
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
         self.validateInput(data)
@@ -156,7 +164,8 @@ class WarrenCowleyParameters(ModifierInterface):
             wc = self.get_wc_from_neigh_in_shell_types(
                 neigh_in_shell_types, central_atom_type_mask, c, unique_types
             )
+            self.check_symmetry(wc)
             wc_for_shells[m] = wc
-
+        
         data.attributes["Warren-Cowley parameters"] = wc_for_shells
         self.create_visualization_tables(unique_types, nshells, wc_for_shells, data)

@@ -19,7 +19,7 @@ from ovito.io import import_file
 import WarrenCowleyParameters as wc
 
 pipeline = import_file("fcc.dump")
-mod = wc.WarrenCowleyParameters(nneigh=[0, 12, 18])
+mod = wc.WarrenCowleyParameters(nneigh=[0, 12, 18], only_selected=False)
 pipeline.modifiers.append(mod)
 data = pipeline.compute()
 
