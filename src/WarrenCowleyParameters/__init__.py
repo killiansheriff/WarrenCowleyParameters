@@ -1,5 +1,4 @@
 import itertools
-import warnings
 
 import numpy as np
 from ovito.data import DataCollection, DataTable, ElementType, NearestNeighborFinder
@@ -125,7 +124,6 @@ class WarrenCowleyParameters(ModifierInterface):
         try:
             assert np.allclose(arr.T, arr)
         except:
-            # warnings.warn("WCs are not exactly symmetric.")
             print("WARNING: WCs are not exactly symmetric.")
 
     def modify(self, data: DataCollection, frame: int, **kwargs):
@@ -166,6 +164,6 @@ class WarrenCowleyParameters(ModifierInterface):
             )
             self.check_symmetry(wc)
             wc_for_shells[m] = wc
-        
+
         data.attributes["Warren-Cowley parameters"] = wc_for_shells
         self.create_visualization_tables(unique_types, nshells, wc_for_shells, data)
