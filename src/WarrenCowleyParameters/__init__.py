@@ -32,7 +32,7 @@ class WarrenCowleyVisualization:
     def get_type_name(self, id: int) -> str:
         """Get the name of a particle type by its ID"""
         particle_type = self.data.particles["Particle Type"].type_by_id(id)
-        return particle_type.name if particle_type else f"Type {id}"
+        return particle_type.name or f"Type {id}"
 
     def create_visualization_tables(self, unique_types, nshells, wc_for_shells):
         for m in range(nshells):
