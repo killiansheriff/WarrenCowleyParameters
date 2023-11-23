@@ -6,6 +6,54 @@ from ovito.pipeline import ModifierInterface
 from traits.api import Bool, Int, List
 
 
+class WarrenCowleyParameters(ModifierInterface):
+    """Compute the Warren-Cowley parameters.
+
+    ```python
+    from ovito.io import import_file
+    import WarrenCowleyParameters as WarrenCowleyParameters
+
+    pipeline = import_file("fcc.dump")
+    mod = WarrenCowleyParameters(nneigh=[0, 12, 18])
+    pipeline.modifiers.append(mod)
+    data = pipeline.compute()
+
+    wc_for_shells = data.attributes["Warren-Cowley parameters"]
+    print(f"1NN Warren-Cowley parameters: \n {wc_for_shells[0]}")
+    print(f"2NN Warren-Cowley parameters: \n {wc_for_shells[1]}")
+    ```
+    """
+
+    # List of integers representing the maximum number of atoms in shells
+    nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
+
+    # Wheather or not to apply it on only selected particles
+    only_selected = Bool(False, label="Only selected")
+
+    def modify(self, data: DataCollection, frame: int, **kwargs):
+        # Validate input arguments
+        validator = InputValidator(data, self.nneigh, self.only_selected)
+        validator.validate()
+
+        # Compute Warren-Cowley parameters for each NN shell
+        calculator = WarrenCowleyCalculator(data, self.nneigh, self.only_selected)
+        wc_for_shells = calculator.calculate_warren_cowley_parameters()
+
+        # Storing the Warren-Cowley parameters as a data attributes
+        data.attributes["Warren-Cowley parameters"] = wc_for_shells
+
+        # Ovito DataTables visualization
+        visualizer = WarrenCowleyVisualization(data)
+        visualizer.create_visualization_tables(
+            unique_types=calculator.unique_types,
+            nshells=len(self.nneigh) - 1,
+            wc_for_shells=wc_for_shells,
+        )
+
+
+###########################################################
+
+
 class InputValidator:
     def __init__(self, data, nneigh, only_selected):
         self.data = data
@@ -23,52 +71,6 @@ class InputValidator:
     def _validate_selection_existence(self):
         if self.only_selected and "Selection" not in self.data.particles.keys():
             raise KeyError("No selection defined in the data")
-
-
-class WarrenCowleyVisualization:
-    def __init__(self, data: DataCollection) -> None:
-        self.data = data
-
-    def get_type_name(self, id: int) -> str:
-        """Get the name of a particle type by its ID"""
-        particle_type = self.data.particles["Particle Type"].type_by_id(id)
-        return particle_type.name or f"Type {id}"
-
-    def create_visualization_tables(self, unique_types, nshells, wc_for_shells):
-        for m in range(nshells):
-            labels, values = self._get_labels_and_values(unique_types, wc_for_shells, m)
-            self._create_data_table(m, labels, values)
-
-    def _get_labels_and_values(self, unique_types, wc_for_shells, shell_index):
-        labels, values = [], []
-        idx = range(len(unique_types))
-
-        for i, j in itertools.combinations_with_replacement(idx, 2):
-            namei = self.get_type_name(unique_types[i])
-            namej = self.get_type_name(unique_types[j])
-            labels.append(f"{namei}-{namej}")
-            values.append(wc_for_shells[shell_index, i, j])
-
-        return labels, values
-
-    def _create_data_table(self, shell_index, labels, values):
-        table = self._create_table(shell_index, labels, values)
-        self.data.objects.append(table)
-
-    def _create_table(self, shell_index, labels, values):
-        """Creates and configures a data table."""
-        table = DataTable(
-            title=f"Warren-Cowley parameter (shell={shell_index + 1})",
-            plot_mode=DataTable.PlotMode.BarChart,
-        )
-        table.x = table.create_property("i-j pair", data=range(len(labels)))
-        table.x.types = [
-            ElementType(id=idx, name=label) for idx, label in enumerate(labels)
-        ]
-        table.y = table.create_property(
-            f"Warren-Cowley parameter (shell={shell_index + 1})", data=values
-        )
-        return table
 
 
 class WarrenCowleyCalculator:
@@ -176,46 +178,47 @@ class WarrenCowleyCalculator:
             print("WARNING: The parameters are not symmetric.")
 
 
-class WarrenCowleyParameters(ModifierInterface):
-    """Compute the Warren-Cowley parameters.
+class WarrenCowleyVisualization:
+    def __init__(self, data: DataCollection) -> None:
+        self.data = data
 
-    ```python
-    from ovito.io import import_file
-    import WarrenCowleyParameters as WarrenCowleyParameters
+    def get_type_name(self, id: int) -> str:
+        """Get the name of a particle type by its ID"""
+        particle_type = self.data.particles["Particle Type"].type_by_id(id)
+        return particle_type.name or f"Type {id}"
 
-    pipeline = import_file("fcc.dump")
-    mod = WarrenCowleyParameters(nneigh=[0, 12, 18])
-    pipeline.modifiers.append(mod)
-    data = pipeline.compute()
+    def create_visualization_tables(self, unique_types, nshells, wc_for_shells):
+        for m in range(nshells):
+            labels, values = self._get_labels_and_values(unique_types, wc_for_shells, m)
+            self._create_data_table(m, labels, values)
 
-    wc_for_shells = data.attributes["Warren-Cowley parameters"]
-    print(f"1NN Warren-Cowley parameters: \n {wc_for_shells[0]}")
-    print(f"2NN Warren-Cowley parameters: \n {wc_for_shells[1]}")
-    ```
-    """
+    def _get_labels_and_values(self, unique_types, wc_for_shells, shell_index):
+        labels, values = [], []
+        idx = range(len(unique_types))
 
-    # List of integers representing the maximum number of atoms in shells
-    nneigh = List(Int, value=[0, 12], label="Max atoms in shells", minlen=2)
+        for i, j in itertools.combinations_with_replacement(idx, 2):
+            namei = self.get_type_name(unique_types[i])
+            namej = self.get_type_name(unique_types[j])
+            labels.append(f"{namei}-{namej}")
+            values.append(wc_for_shells[shell_index, i, j])
 
-    # Wheather or not to apply it on only selected particles
-    only_selected = Bool(False, label="Only selected")
+        return labels, values
 
-    def modify(self, data: DataCollection, frame: int, **kwargs):
-        # Validate input arguments
-        validator = InputValidator(data, self.nneigh, self.only_selected)
-        validator.validate()
+    def _create_data_table(self, shell_index, labels, values):
+        table = self._create_table(shell_index, labels, values)
+        self.data.objects.append(table)
 
-        # Compute Warren-Cowley parameters for each NN shell
-        calculator = WarrenCowleyCalculator(data, self.nneigh, self.only_selected)
-        wc_for_shells = calculator.calculate_warren_cowley_parameters()
-
-        # Storing the Warren-Cowley parameters as a data attributes
-        data.attributes["Warren-Cowley parameters"] = wc_for_shells
-
-        # Ovito DataTables visualization
-        visualizer = WarrenCowleyVisualization(data)
-        visualizer.create_visualization_tables(
-            unique_types=calculator.unique_types,
-            nshells=len(self.nneigh) - 1,
-            wc_for_shells=wc_for_shells,
+    def _create_table(self, shell_index, labels, values):
+        """Creates and configures a data table."""
+        table = DataTable(
+            title=f"Warren-Cowley parameter (shell={shell_index + 1})",
+            plot_mode=DataTable.PlotMode.BarChart,
         )
+        table.x = table.create_property("i-j pair", data=range(len(labels)))
+        table.x.types = [
+            ElementType(id=idx, name=label) for idx, label in enumerate(labels)
+        ]
+        table.y = table.create_property(
+            f"Warren-Cowley parameter (shell={shell_index + 1})", data=values
+        )
+        return table
