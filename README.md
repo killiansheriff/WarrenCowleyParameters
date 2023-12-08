@@ -48,4 +48,15 @@ If you want to install the lastest git commit, please replace ``WarrenCowleyPara
 If any questions, feel free to contact me (ksheriff at mit dot edu).
 
 ## References & Citing 
-If you use this repository in your work, please cite ``bibtex entry to follow``.
+If you use this repository in your work, please cite:
+
+```
+@misc{sheriff2023quantifying,
+      title={Quantifying chemical short-range order in metallic alloys}, 
+      author={Killian Sheriff and Yifan Cao and Tess Smidt and Rodrigo Freitas},
+      year={2023},
+      eprint={2311.01545},
+      archivePrefix={arXiv},
+      primaryClass={cond-mat.mtrl-sci}
+}
+```
