@@ -196,7 +196,8 @@ class WarrenCowleyVisualization:
             particle_type = self.data.particles["Particle Type"].type_by_id(id)
         except:
             # This is to deal with the case whenever type 3 and 1 are assigned but no atoms have type 2
-            particle_type.name = False
+            ParticleType = lambda name=False: type('ParticleType', (), {'name': name})()
+            particle_type = ParticleType()
         return particle_type.name or f"Type {id}"
 
     def create_visualization_tables(self, unique_types, nshells, wc_for_shells):
