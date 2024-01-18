@@ -142,16 +142,9 @@ class WarrenCowleyCalculator:
         return neighbor_indices
 
     def _calculate_concentration(self, particle_types):
-        #  This is to deal with the case whenever type 3 and 1 are assigned but no atoms have type 2
-        ntypes = np.max(particle_types)
-        unique_types = np.arange(1, ntypes + 1)
-        counts = np.bincount(particle_types)[1:]
+        unique_types, counts = np.unique(particle_types, return_counts=True)
+
         return unique_types, counts / len(particle_types)
-
-        # This used to be the old way
-        # unique_types, counts = np.unique(particle_types, return_counts=True)
-
-    # return unique_types, counts / len(particle_types)
 
     def _create_central_atom_type_mask(self, unique_types, particle_types):
         unique_types_array = unique_types[:, np.newaxis]
@@ -192,12 +185,8 @@ class WarrenCowleyVisualization:
 
     def get_type_name(self, id: int) -> str:
         """Get the name of a particle type by its ID"""
-        try:
-            particle_type = self.data.particles["Particle Type"].type_by_id(id)
-        except:
-            # This is to deal with the case whenever type 3 and 1 are assigned but no atoms have type 2
-            ParticleType = lambda name=False: type('ParticleType', (), {'name': name})()
-            particle_type = ParticleType()
+
+        particle_type = self.data.particles["Particle Type"].type_by_id(id)
         return particle_type.name or f"Type {id}"
 
     def create_visualization_tables(self, unique_types, nshells, wc_for_shells):
