@@ -1,3 +1,6 @@
+import warnings
+
+warnings.filterwarnings("ignore", message=".*OVITO.*PyPI")
 import numpy as np
 import pytest
 from ovito.data import DataCollection
@@ -53,7 +56,6 @@ def test_wc_symmetric(import_data: DataCollection):
 
 
 def test_selection(import_data: DataCollection):
- 
     data = import_data
     data.apply(ExpressionSelectionModifier(expression="Position.X > 10"))
     data.apply(WarrenCowleyParameters(only_selected=True))
