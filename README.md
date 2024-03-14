@@ -54,7 +54,16 @@ If you use this repository in your work, please cite:
 @article{sheriff2023quantifying,
   title={Quantifying chemical short-range order in metallic alloys},
   author={Sheriff, Killian and Cao, Yifan and Smidt, Tess and Freitas, Rodrigo},
-  journal={arXiv preprint arXiv:2311.01545},
-  year={2023}
+  journal={arXiv},
+  year={2023},
+  doi={10.48550/arXiv.2311.01545}
 }
+```
+
+and 
+
+```
+@article{TBD
+}
+```
 ```
