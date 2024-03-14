@@ -66,4 +66,3 @@ and
 @article{TBD
 }
 ```
-```
