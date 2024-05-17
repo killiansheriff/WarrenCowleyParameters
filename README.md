@@ -63,6 +63,11 @@ If you use this repository in your work, please cite:
 and 
 
 ```
-@article{TBD
+@article{sheriff2024chemicalmotif,
+  title={Chemical-motif characterization of short-range order with E(3)-equivariant graph neural networks}, 
+  author={Killian Sheriff and Yifan Cao and Rodrigo Freitas},
+  journal={arXiv},
+  year={2024},
+  doi={10.48550/arXiv.2405.08628}
 }
 ```
