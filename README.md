@@ -51,12 +51,12 @@ If any questions, feel free to contact me (ksheriff at mit dot edu).
 If you use this repository in your work, please cite:
 
 ```
-@article{sheriff2023quantifying,
-  title={Quantifying chemical short-range order in metallic alloys},
-  author={Sheriff, Killian and Cao, Yifan and Smidt, Tess and Freitas, Rodrigo},
-  journal={arXiv},
-  year={2023},
-  doi={10.48550/arXiv.2311.01545}
+@article{sheriffquantifying2024,
+	title = {Quantifying chemical short-range order in metallic alloys},
+	doi = {10.1073/pnas.2322962121},
+	journaltitle = {Proceedings of the National Academy of Sciences},
+	author = {Sheriff, Killian and Cao, Yifan and Smidt, Tess and Freitas, Rodrigo},
+	date = {2024-06-18},
 }
 ```
 
@@ -64,10 +64,11 @@ and
 
 ```
 @article{sheriff2024chemicalmotif,
-  title={Chemical-motif characterization of short-range order with E(3)-equivariant graph neural networks}, 
-  author={Killian Sheriff and Yifan Cao and Rodrigo Freitas},
-  journal={arXiv},
-  year={2024},
-  doi={10.48550/arXiv.2405.08628}
+  title = {Chemical-motif characterization of short-range order with E(3)-equivariant graph neural networks},
+  DOI = {10.1038/s41524-024-01393-5},
+  journal = {npj Computational Materials},
+  author = {Sheriff,  Killian and Cao,  Yifan and Freitas,  Rodrigo},
+  year = {2024},
+  month = sep,
 }
 ```
