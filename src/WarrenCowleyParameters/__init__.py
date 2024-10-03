@@ -143,7 +143,6 @@ class WarrenCowleyCalculator:
 
     def _calculate_concentration(self, particle_types):
         unique_types, counts = np.unique(particle_types, return_counts=True)
-
         return unique_types, counts / len(particle_types)
 
     def _create_central_atom_type_mask(self, unique_types, particle_types):
@@ -164,7 +163,8 @@ class WarrenCowleyCalculator:
 
             # Number of i-X bonds
             neighbor_counts = np.bincount(
-                neighbor_types_flat, minlength=len(concentrations) + 1
+                neighbor_types_flat,
+                minlength=np.max(self.unique_types) + 1,  # len(concentrations) + 1
             )
 
             pij = neighbor_counts[unique_types] / (neighbor_types.shape[0] * Nb)
