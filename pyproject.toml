@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "WarrenCowleyParameters"
-version = "1.0.1"
+version = "2.0.0"
 description = "OVITO Python modifier to compute Warren-Cowley parameters."
 keywords = ["ovito", "python-modifier"]
 authors = [{name = "Killian Sheriff", email = "ksheriff@mit.edu"}]
