@@ -10,3 +10,6 @@ data = pipeline.compute()
 wc_for_shells = data.attributes["Warren-Cowley parameters"]
 print(f"1NN Warren-Cowley parameters: \n {wc_for_shells[0]}")
 print(f"2NN Warren-Cowley parameters: \n {wc_for_shells[1]}")
+
+# Alternatively, can see it as a dictionarry
+# print(data.attributes["Warren-Cowley parameters by particle name"])

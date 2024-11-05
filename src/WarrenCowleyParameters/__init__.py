@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from ovito.data import DataCollection, DataTable, ElementType, NearestNeighborFinder
 from ovito.pipeline import ModifierInterface
-from traits.api import Bool, Int, List
+from traits.api import Bool, Int, List, String
 
 
 class WarrenCowleyParameters(ModifierInterface):
@@ -48,6 +48,10 @@ class WarrenCowleyParameters(ModifierInterface):
             unique_types=calculator.unique_types,
             nshells=len(self.nneigh) - 1,
             wc_for_shells=wc_for_shells,
+        )
+
+        data.attributes["Warren-Cowley parameters by particle name"] = (
+            visualizer.wcs_as_dict
         )
 
 
@@ -190,8 +194,11 @@ class WarrenCowleyVisualization:
         return particle_type.name or f"Type {id}"
 
     def create_visualization_tables(self, unique_types, nshells, wc_for_shells):
+        self.wcs_as_dict = []
         for m in range(nshells):
             labels, values = self._get_labels_and_values(unique_types, wc_for_shells, m)
+
+            self.wcs_as_dict.append({lab: val for lab, val in zip(labels, values)})
             self._create_data_table(m, labels, values)
 
     def _get_labels_and_values(self, unique_types, wc_for_shells, shell_index):
