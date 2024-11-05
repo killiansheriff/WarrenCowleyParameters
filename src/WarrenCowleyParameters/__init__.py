@@ -205,7 +205,8 @@ class WarrenCowleyVisualization:
         labels, values = [], []
         idx = range(len(unique_types))
 
-        for i, j in itertools.combinations_with_replacement(idx, 2):
+        # for i, j in itertools.combinations_with_replacement(idx, 2):
+        for i, j in itertools.combinations(idx, 2):
             namei = self.get_type_name(unique_types[i])
             namej = self.get_type_name(unique_types[j])
             labels.append(f"{namei}-{namej}")
