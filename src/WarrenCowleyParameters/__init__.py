@@ -204,9 +204,8 @@ class WarrenCowleyVisualization:
     def _get_labels_and_values(self, unique_types, wc_for_shells, shell_index):
         labels, values = [], []
         idx = range(len(unique_types))
-
         # for i, j in itertools.combinations_with_replacement(idx, 2):
-        for i, j in itertools.permutations(idx, 2):
+        for i, j in list(itertools.product(idx, repeat=2)):
             namei = self.get_type_name(unique_types[i])
             namej = self.get_type_name(unique_types[j])
             labels.append(f"{namei}-{namej}")
