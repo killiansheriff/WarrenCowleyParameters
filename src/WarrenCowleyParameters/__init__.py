@@ -117,7 +117,7 @@ class WarrenCowleyCalculator:
 
         ntypes = len(unique_types)
         nshells = len(self.nneigh) - 1
-        wc_for_shells = np.zeros((nshells, ntypes, ntypes))
+        wc_for_shells = np.empty((nshells, ntypes, ntypes))
 
         # Calculate Warren-Cowley parameters for each shell
         for m in range(nshells):
@@ -156,7 +156,7 @@ class WarrenCowleyCalculator:
     def _compute_wc_params(
         self, shell_types, central_atom_mask, concentrations, unique_types
     ):
-        wc_params = np.zeros((len(concentrations), len(concentrations)))
+        wc_params = np.empty((len(concentrations), len(concentrations)))
 
         Nb = shell_types.shape[1]  # Number of neighbor in shell
 
