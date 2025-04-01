@@ -5,6 +5,10 @@ from ovito.data import DataCollection, DataTable, ElementType, NearestNeighborFi
 from ovito.pipeline import ModifierInterface
 from traits.api import Bool, Int, List, String
 
+# Flag to compare the global WC parameter calculation to the per atom implementation
+# Should be false when running in production
+VALIDATE = True
+
 
 class WarrenCowleyParameters(ModifierInterface):
     """Compute the Warren-Cowley parameters.
@@ -37,7 +41,9 @@ class WarrenCowleyParameters(ModifierInterface):
 
         # Compute Warren-Cowley parameters for each NN shell
         calculator = WarrenCowleyCalculator(data, self.nneigh, self.only_selected)
-        wc_for_shells = calculator.calculate_warren_cowley_parameters()
+        wc_for_shells, wc_per_particles_for_shells = (
+            calculator.calculate_warren_cowley_parameters()
+        )
 
         # Storing the Warren-Cowley parameters as a data attributes
         data.attributes["Warren-Cowley parameters"] = wc_for_shells
@@ -52,6 +58,10 @@ class WarrenCowleyParameters(ModifierInterface):
 
         data.attributes["Warren-Cowley parameters by particle name"] = (
             visualizer.wcs_as_dict
+        )
+
+        visualizer.create_visualization_particle_property(
+            calculator.unique_types, len(self.nneigh) - 1, wc_per_particles_for_shells
         )
 
 
@@ -118,6 +128,7 @@ class WarrenCowleyCalculator:
         ntypes = len(unique_types)
         nshells = len(self.nneigh) - 1
         wc_for_shells = np.empty((nshells, ntypes, ntypes))
+        wc_per_particles_for_shells = np.zeros((nparticles, nshells, ntypes * ntypes))
 
         # Calculate Warren-Cowley parameters for each shell
         for m in range(nshells):
@@ -129,13 +140,29 @@ class WarrenCowleyCalculator:
             # Get atomic types of the NN
             neigh_in_shell_types = particle_types[neigh_idx_in_shell]
 
-            wc = self._compute_wc_params(
-                neigh_in_shell_types, central_atom_mask, concentrations, unique_types
+            # Compute WC parameters
+            wc, wc_per_particle = self._compute_per_particle_wc_params(
+                neigh_in_shell_types,
+                central_atom_mask,
+                concentrations,
+                unique_types,
             )
+
+            if VALIDATE:
+                wc_ref = self._compute_wc_params(
+                    neigh_in_shell_types,
+                    central_atom_mask,
+                    concentrations,
+                    unique_types,
+                )
+                self.verify_symmetry(wc_ref)
+                assert np.allclose(wc_ref, wc)
+
             self.verify_symmetry(wc)
             wc_for_shells[m] = wc
+            wc_per_particles_for_shells[selected_indices, m] = wc_per_particle
 
-        return wc_for_shells
+        return wc_for_shells, wc_per_particles_for_shells
 
     def _extract_particle_types(self):
         return np.array(self.data.particles.particle_type)
@@ -152,6 +179,43 @@ class WarrenCowleyCalculator:
     def _create_central_atom_type_mask(self, unique_types, particle_types):
         unique_types_array = unique_types[:, np.newaxis]
         return particle_types == unique_types_array
+
+    def _compute_per_particle_wc_params(
+        self, shell_types, central_atom_mask, concentrations, unique_types
+    ):
+        wc_params_per_particle = np.zeros(
+            (central_atom_mask.shape[1], len(concentrations) * len(concentrations))
+        )
+        wc_params = np.zeros((len(concentrations), len(concentrations)))
+
+        # Number of neighbor in shell
+        Nb = shell_types.shape[1]
+
+        for i in range(len(concentrations)):
+            # All central atoms of type i
+            central_atoms = central_atom_mask[i]
+
+            # List of neighbors per central atom
+            neighbor_types = shell_types[central_atom_mask[i]]
+
+            # Count the number of neighbors per type for each central atom
+            neighbor_counts = np.apply_along_axis(
+                lambda arr: np.bincount(arr, minlength=np.max(self.unique_types) + 1),
+                axis=1,
+                arr=neighbor_types,
+            )
+
+            # Calculate WC
+            pij = neighbor_counts[:, unique_types] / Nb
+            wc = 1 - pij / concentrations
+
+            # Store WC
+            wc_params[i, :] = np.mean(wc, axis=0)
+            wc_params_per_particle[
+                central_atoms, i * len(concentrations) : (i + 1) * len(concentrations)
+            ] = wc
+
+        return wc_params, wc_params_per_particle
 
     def _compute_wc_params(
         self, shell_types, central_atom_mask, concentrations, unique_types
@@ -213,6 +277,16 @@ class WarrenCowleyVisualization:
 
         return labels, values
 
+    def _get_labels(self, unique_types):
+        labels = []
+        idx = range(len(unique_types))
+        # for i, j in itertools.combinations_with_replacement(idx, 2):
+        for i, j in list(itertools.product(idx, repeat=2)):
+            namei = self.get_type_name(unique_types[i])
+            namej = self.get_type_name(unique_types[j])
+            labels.append(f"{namei}-{namej}")
+        return labels
+
     def _create_data_table(self, shell_index, labels, values):
         table = self._create_table(shell_index, labels, values)
         self.data.objects.append(table)
@@ -231,3 +305,11 @@ class WarrenCowleyVisualization:
             f"Warren-Cowley parameter (shell={shell_index + 1})", data=values
         )
         return table
+
+    def create_visualization_particle_property(self, unique_types, nshells, wc):
+        for m in range(nshells):
+            self.data.particles_.create_property(
+                f"Warren-Cowley parameter (shell={m + 1})",
+                data=wc[:, m],
+                components=self._get_labels(unique_types),
+            )
