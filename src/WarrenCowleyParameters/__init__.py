@@ -127,8 +127,10 @@ class WarrenCowleyCalculator:
 
         ntypes = len(unique_types)
         nshells = len(self.nneigh) - 1
-        wc_for_shells = np.empty((nshells, ntypes, ntypes))
-        wc_per_particles_for_shells = np.empty((nparticles, nshells, ntypes * ntypes))
+        wc_for_shells = np.full((nshells, ntypes, ntypes), np.nan)
+        wc_per_particles_for_shells = np.full(
+            (nparticles, nshells, ntypes * ntypes), np.nan
+        )
 
         # Calculate Warren-Cowley parameters for each shell
         for m in range(nshells):
@@ -183,10 +185,11 @@ class WarrenCowleyCalculator:
     def _compute_per_particle_wc_params(
         self, shell_types, central_atom_mask, concentrations, unique_types
     ):
-        wc_params_per_particle = np.empty(
-            (central_atom_mask.shape[1], len(concentrations) * len(concentrations))
+        wc_params_per_particle = np.full(
+            (central_atom_mask.shape[1], len(concentrations) * len(concentrations)),
+            np.nan,
         )
-        wc_params = np.empty((len(concentrations), len(concentrations)))
+        wc_params = np.full((len(concentrations), len(concentrations)), np.nan)
 
         # Number of neighbor in shell
         Nb = shell_types.shape[1]
@@ -210,7 +213,7 @@ class WarrenCowleyCalculator:
             wc = 1 - pij / concentrations
 
             # Store WC
-            wc_params[i, :] = np.mean(wc, axis=0)
+            wc_params[i, :] = np.nanmean(wc, axis=0)
             wc_params_per_particle[
                 central_atoms, i * len(concentrations) : (i + 1) * len(concentrations)
             ] = wc
@@ -220,7 +223,7 @@ class WarrenCowleyCalculator:
     def _compute_wc_params(
         self, shell_types, central_atom_mask, concentrations, unique_types
     ):
-        wc_params = np.empty((len(concentrations), len(concentrations)))
+        wc_params = np.full((len(concentrations), len(concentrations)), np.nan)
 
         Nb = shell_types.shape[1]  # Number of neighbor in shell
 
