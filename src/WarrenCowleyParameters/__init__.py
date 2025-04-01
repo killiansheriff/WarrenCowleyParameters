@@ -7,7 +7,7 @@ from traits.api import Bool, Int, List, String
 
 # Flag to compare the global WC parameter calculation to the per atom implementation
 # Should be false when running in production
-VALIDATE = True
+VALIDATE = False
 
 
 class WarrenCowleyParameters(ModifierInterface):
